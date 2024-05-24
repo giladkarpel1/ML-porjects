@@ -4,70 +4,83 @@ import copy
 import pickle
 import random
 from datetime import datetime as d
+
 def killdownright(clone,i,j):
     if (clone[i][j] == -1 or clone[i][j] == -2):
         if (i < 6 and j < 6) and clone[i + 2][j + 2] == 0 and (clone[i + 1][j + 1] == 2 or clone[i + 1][j + 1] == 1):
             return True
     return False
+
 def killdownleft(clone,i,j):
     if (clone[i][j] == -1 or clone[i][j] == -2):
         if (i < 6 and j > 1) and clone[i + 2][j - 2] == 0 and (clone[i + 1][j - 1] == 2 or clone[i + 1][j - 1] == 1):
             return True
     return False
+
 def BlackQueenupleftkill(clone,i,j):
     if clone[i][j] == -2:
         if (i>1 and j>1) and clone[i-2][j-2] == 0 and (clone[i - 1][j - 1] == 1 or clone[i - 1][j - 1] == 2):
             return True
     return False
+
 def BlackQueenuprightkill(clone,i,j):
     if clone[i][j] == -2:
         if (i > 1 and j < 6) and clone[i - 2][j + 2] == 0 and (clone[i - 1][j + 1] == 1 or clone[i - 1][j + 1] == 2):
             return True
     return False
+
 def killupleft(clone,i,j):
     if (clone[i][j] == 1 or clone[i][j] == 2):
         if (i > 1 and j > 1) and clone[i - 2][j -2] == 0 and (clone[i -1][j -1] == -1 or clone[i - 1][j - 1] == -2):
             return True
     return False
+
 def killupright(clone,i,j):
     if (clone[i][j] == 1 or clone[i][j] == 2):
         if (i >1 and j <6) and clone[i -2][j +2] == 0 and (clone[i -1][j +1] == -1 or clone[i - 1][j + 1] == -2):
             return True
     return False
+
 def WhiteQueenEatdownleft(clone,i,j):
     if clone[i][j] == 2:
         if (i <6 and j >1) and clone[i +2][j -2] == 0 and (clone[i +1][j -1] == -1 or clone[i + 1][j - 1] == -2):
             return True
     return False
+
 def WhiteQueenEatdownright(clone,i,j,):
     if clone[i][j] == 2:
         if (i < 6 and j < 6) and clone[i +2][j +2] == 0 and (clone[i +1][j +1] == -1 or clone[i + 1][j + 1] == -2):
             return True
     return False
+
 def WhiteSoldierMoves(clone,i,j,AvailableMoves):
     if (clone[i][j] == 1 or clone[i][j] == 2):
         if (i > 0 and j > 0) and clone[i-1][j-1] == 0:
             AvailableMoves.append((i, j, i-1, j - 1))
         if (i > 0 and j < 7) and clone[i-1][j+1] == 0:
             AvailableMoves.append((i, j, i-1, j+1))
+
 def WhiteQueensMoves(clone,i,j,AvailableMoves):
     if clone[i][j] == 2:
         if (i < 7 and j > 0) and clone[i + 1][j - 1] == 0:
             AvailableMoves.append((i, j, i + 1, j - 1))
         if (i < 7 and j < 7) and clone[i + 1][j + 1] == 0:
             AvailableMoves.append((i, j, i + 1, j + 1))
+
 def BlackSoldierMoves(clone,i,j,AvailableMoves):
     if (clone[i][j] == -1 or clone[i][j] == -2):
         if (i < 7 and j > 0) and clone[i + 1][j - 1] == 0:
             AvailableMoves.append((i, j, i + 1, j - 1))
         if (i < 7 and j < 7) and clone[i + 1][j + 1] == 0:
             AvailableMoves.append((i, j, i + 1, j + 1))
+
 def BlackQueensMoves(clone,i,j,AvailableMoves):
     if clone[i][j] == -2:
         if (i > 0 and j >0) and clone[i-1][j-1] == 0:
             AvailableMoves.append((i, j, i-1, j-1))
         if (i > 0 and j <7) and clone[i-1][j+1] == 0:
             AvailableMoves.append((i, j, i-1, j+1))
+
 def killsBlack(game_state, i, j, AvailableMoves):
     Ifirst = i
     JFirst = j
@@ -203,11 +216,13 @@ def gameover(game_state,counterTimes):
     if len(get_available_moves(game_state,"White"))==0 or len(get_available_moves(game_state,"Black"))==0 or counterTimes==15:
         return True
     return False
+
 def get_all_nextstates(game_state,flag):
     All_next_Boards=[]
     for move in get_available_moves(game_state,flag):
         All_next_Boards.append((next_state(game_state,move,flag),move))
     return All_next_Boards
+
 def numberPieces(game_state):
     NumberPieces = 0
     for i in range(8):
@@ -215,6 +230,7 @@ def numberPieces(game_state):
             if game_state[i][j] != 0:
                 NumberPieces += 1
     return NumberPieces
+
 def makeemptylist():
   list=np.zeros((8,8))
   for i in range(8):
@@ -307,7 +323,6 @@ def WhiteEatNextState(clone, Move):
             break
     return clone
 
-
 def BlackEatNextState(clone, Move):
     i = Move[0]
     j = Move[1]
@@ -377,13 +392,7 @@ class Reinforcement:#Black Player
         self.alpha=0.9
         self.AllBoards={}
         self.states=[]
-    def givereward(self,game_state,counterTimes):#giving a evaluation when the game ended to the final board
-        if len(get_available_moves(game_state,"White"))==0:
-            self.update(1)
-        if len(get_available_moves(game_state,"Black"))==0:
-            self.update(-1)
-        if counterTimes==25:
-            self.update(-0.4)
+    
     def ranking(self):#running all the games
         for i in range(100000):
             if i%10==0:
@@ -423,6 +432,15 @@ class Reinforcement:#Black Player
                     break
             self.givereward(game_state1,counterTimes)
         return self.AllBoards
+    
+    def givereward(self,game_state,counterTimes):#giving a evaluation when the game ended to the final board
+        if len(get_available_moves(game_state,"White"))==0:
+            self.update(1)
+        if len(get_available_moves(game_state,"Black"))==0:
+            self.update(-1)
+        if counterTimes==25:
+            self.update(-0.4)
+            
     def update(self,reward):#updating all the following boards
         for st in reversed(self.states):
             if self.AllBoards.get(str(st)) is None:
